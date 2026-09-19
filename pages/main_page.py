@@ -5,9 +5,6 @@ from pages.base_page import BasePage
 from urls import Links
 from data import Ingredients
 
-from selenium.webdriver.support.ui import WebDriverWait
-
-
 class MainPage(BasePage):
 
     @allure.step("Нажать «Оформить заказ»")
@@ -16,11 +13,7 @@ class MainPage(BasePage):
 
     @allure.step("Дождаться настоящего номера заказа в окне")
     def wait_for_real_order_number(self, timeout=60):
-        def number_is_real(driver):
-            elements = driver.find_elements(*MainPageLocators.ORDER_NUMBER)
-            return bool(elements) and elements[0].text.strip() not in ("", "9999")
-
-        WebDriverWait(self.driver, timeout).until(number_is_real)
+        self.wait_for_text_not_in(MainPageLocators.ORDER_NUMBER, ("", "9999"), timeout)
 
     @allure.step("Получить номер заказа из окна")
     def get_order_number(self):
