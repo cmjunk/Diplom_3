@@ -12,6 +12,8 @@ from api_client import StellarBurgersAPI
 from data import TestUser
 from generators import generate_login, generate_password
 from pages.main_page import MainPage
+from pages.feed_page import FeedPage
+from pages.login_page import LoginPage
 from urls import Links
 
 
@@ -59,3 +61,15 @@ def registered_user():
 
     if access_token:
         StellarBurgersAPI.delete_user(access_token)
+
+@pytest.fixture
+def order_feed_page(driver):
+    return FeedPage(driver)
+
+
+@pytest.fixture
+def login(driver, registered_user):
+    login_page = LoginPage(driver)
+    login_page.open_login_page()
+    login_page.login(registered_user["email"], registered_user["password"])
+    login_page.wait_for_url(Links.MAIN_URL)

@@ -3,9 +3,43 @@ import allure
 from locators import MainPageLocators
 from pages.base_page import BasePage
 from urls import Links
+from data import Ingredients
+
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class MainPage(BasePage):
+
+    @allure.step("Нажать «Оформить заказ»")
+    def click_order_button(self):
+        self.click(MainPageLocators.ORDER_BUTTON)
+
+    @allure.step("Дождаться настоящего номера заказа в окне")
+    def wait_for_real_order_number(self, timeout=60):
+        def number_is_real(driver):
+            elements = driver.find_elements(*MainPageLocators.ORDER_NUMBER)
+            return bool(elements) and elements[0].text.strip() not in ("", "9999")
+
+        WebDriverWait(self.driver, timeout).until(number_is_real)
+
+    @allure.step("Получить номер заказа из окна")
+    def get_order_number(self):
+        return self.get_text(MainPageLocators.ORDER_NUMBER)
+
+    @allure.step("Закрыть окно с номером заказа")
+    def close_order_modal(self):
+        self.click(MainPageLocators.POPUP_X)
+
+    @allure.step("Создать заказ и вернуть его номер")
+    def create_order(self):
+        self.add_ingredient_to_basket(Ingredients.BUN)
+        self.add_ingredient_to_basket(Ingredients.FILLING)
+        self.click_order_button()
+        self.wait_for_real_order_number()
+        order_number = self.get_order_number()
+        self.close_order_modal()
+        return order_number
+
     @allure.step("Открыть главную страницу")
     def open_main_page(self):
         self.open(Links.MAIN_URL)

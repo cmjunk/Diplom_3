@@ -22,8 +22,8 @@ class FeedPage(BasePage):
 
     @allure.step("Получить список номеров заказов из раздела «В работе»")
     def get_orders_in_progress_numbers(self):
-        elements = self.find_all(FeedPageLocators.ORDERS_IN_PROGRESS_NUMBERS)
-        return [el.text for el in elements]
+        elements = self.driver.find_elements(*FeedPageLocators.ORDERS_IN_PROGRESS_NUMBERS)
+        return [(el.get_attribute("textContent") or "").strip() for el in elements]
 
     @allure.step("Дождаться, пока счётчик «Выполнено за всё время» увеличится")
     def wait_for_total_orders_count_increase(self, count_before, timeout=15):
@@ -48,11 +48,14 @@ class FeedPage(BasePage):
         return current
 
     @allure.step("Дождаться появления номера заказа в разделе «В работе»")
-    def wait_for_order_number_in_progress(self, order_number, timeout=15):
+    def wait_for_order_number_in_progress(self, order_number, timeout=30):
+        expected = order_number.lstrip("0")
         end_time = time.time() + timeout
+        numbers = []
         while time.time() < end_time:
-            numbers = self.get_orders_in_progress_numbers()
-            if any(order_number.endswith(n) or n in order_number for n in numbers):
+            numbers = [n.lstrip("0") for n in self.get_orders_in_progress_numbers()]
+            if expected in numbers:
                 return True
             time.sleep(0.5)
+        print(f"ожидали: {expected}, в списке: {numbers}")
         return False

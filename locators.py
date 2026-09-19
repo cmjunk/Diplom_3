@@ -22,10 +22,12 @@ class MainPageLocators:
     ORDERS_FEED = (By.XPATH, "//p[text()='Лента Заказов']") # Кнопка "Лента заказов"
     INGREDIENT = (By.XPATH, "//a[contains(@href, '/ingredient/')]") # Любой ингредиент
     BASKET = (By.XPATH, "//section[contains(@class, 'BurgerConstructor_basket__')]") # Корзина
-    INGREDIENT_BY_NAME = "//a[.//p[text()='{name}']]"
+    INGREDIENT_BY_NAME = "//a[.//p[text()='{name}']]" 
     COUNTER_BY_NAME = "//a[.//p[text()='{name}']]//div[contains(@class, 'counter_counter__')]"
-    POPUP_DETAILS = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened__')]//h2[text()='Детали ингредиента']")
-    POPUP_X = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened__')]//button[@type='button']")
+    POPUP_DETAILS = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened__')]//h2[text()='Детали ингредиента']") # Попап при нажатии на ингридиент
+    POPUP_X = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened__')]//button[@type='button']") # Крестик для закрытия попапа
+    ORDER_BUTTON = (By.XPATH, "//button[text()='Оформить заказ']")  # Кнопка «Оформить заказ»
+    ORDER_NUMBER = (By.XPATH, "//section[contains(@class, 'Modal_modal_opened__')]//h2[contains(@class, 'Modal_modal__title_shadow__')]")  # Номер заказа в окне
 
     @staticmethod
     def ingredient_by_name(name):
@@ -43,7 +45,8 @@ class AccountPageLocators:
 
 
 class FeedPageLocators:
-    TOTAL_ORDERS_READY = (By.XPATH, "//p[text()='Готовы']") # Готовые заказы
-    TOTAL_ORDERS_COUNT = (By.XPATH, "//p[text()='Выполнено за все время']")  # "Выполнено за всё время"
-    TODAY_ORDERS_COUNT = (By.XPATH, "//p[text()='Выполнено за сегодня']")  # "Выполнено за сегодня"
-    ORDERS_IN_PROGRESS = (By.XPATH, "//p[text()='В работе']") # Заказов в работе
+    TOTAL_ORDERS_READY = (By.XPATH, "//p[contains(text(), 'Готовы')]") # Готовые заказы
+    ORDERS_IN_PROGRESS = (By.XPATH, "//p[contains(text(), 'В работе')]") # Заголовок "Заказы в работе"
+    TOTAL_ORDERS_COUNT = (By.XPATH, "//p[contains(text(), 'Выполнено за все время')]/following-sibling::p") # Заказы, выполненные за все время
+    TODAY_ORDERS_COUNT = (By.XPATH, "//p[contains(text(), 'Выполнено за сегодня')]/following-sibling::p") # Заказы, выполненные за сегодня
+    ORDERS_IN_PROGRESS_NUMBERS = (By.XPATH, "//p[contains(text(), 'В работе')]/following-sibling::ul/li") # Количество заказов "В работе"
