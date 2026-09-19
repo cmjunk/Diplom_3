@@ -9,33 +9,24 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from api_client import StellarBurgersAPI
-from generators import generate_email, generate_name, generate_password
+from data import TestUser
+from generators import generate_login, generate_password
+from pages.main_page import MainPage
 from urls import Links
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--browser",
-        action="store",
-        default="chrome",
-        help="Браузер для запуска тестов: chrome или firefox",
-    )
-
-
-@pytest.fixture
+@pytest.fixture(params=["chrome", "firefox"])
 def driver(request):
-    browser_name = request.config.getoption("--browser")
+    browser_name = request.param
 
     if browser_name == "chrome":
         options = ChromeOptions()
         service = ChromeService(ChromeDriverManager().install())
         web_driver = webdriver.Chrome(service=service, options=options)
-    elif browser_name == "firefox":
+    else:
         options = FirefoxOptions()
         service = FirefoxService(GeckoDriverManager().install())
         web_driver = webdriver.Firefox(service=service, options=options)
-    else:
-        raise ValueError(f"Неизвестный браузер: {browser_name}. Используйте chrome или firefox.")
 
     allure.dynamic.parameter("browser", browser_name)
 
@@ -48,10 +39,15 @@ def driver(request):
 
 
 @pytest.fixture
+def main_page(driver):
+    return MainPage(driver)
+
+
+@pytest.fixture
 def registered_user():
-    email = generate_email()
+    email = generate_login()
     password = generate_password()
-    name = generate_name()
+    name = TestUser.NAME
 
     response = StellarBurgersAPI.register_user(email, password, name)
     body = response.json()
